@@ -25,7 +25,7 @@ const CurrentTask = () => {
 
                 }}
             >
-                <h2>Frontend Developer Assessment– Frontlines Media
+                <h2>Frontend Developer Assessment–_ Frontlines Media
                 </h2>
                 <Table
                     columns={columns}
