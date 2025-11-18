@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { TextField } from "@mui/material";
+import CircularIndeterminate from "./Loader";
 
 export const Table = ({
   columns,
@@ -30,13 +31,11 @@ export const Table = ({
 
   const [originalData, setOriginalData] = useState(data);
 
-  // Dropdown filters
   const [filters, setFilters] = useState({
     location: "",
     industry: "",
   });
 
-  // Unique dropdown values
   const uniqueLocations = [...new Set(data.map((item) => item.location))];
   const uniqueIndustries = [...new Set(data.map((item) => item.industry))];
 
@@ -60,7 +59,6 @@ export const Table = ({
     setSearchValues(initValues);
   }, [data, columns]);
 
-  // UPDATED: search + filters
   useEffect(() => {
     let filtered = data
       .filter((row) =>
@@ -141,8 +139,8 @@ export const Table = ({
       currentCol?.direction === "asc"
         ? "desc"
         : currentCol?.direction === "desc"
-        ? "none"
-        : "asc";
+          ? "none"
+          : "asc";
 
     if (direction === "none") {
       setFilterData([...originalData]);
@@ -159,7 +157,6 @@ export const Table = ({
 
   return (
     <>
-      {/* TOP-RIGHT FILTERS */}
       <div
         style={{
           width: width,
@@ -169,7 +166,6 @@ export const Table = ({
           marginBottom: "10px",
         }}
       >
-        {/* Location Filter */}
         <select
           style={{ padding: "6px" }}
           value={filters.location}
@@ -185,7 +181,6 @@ export const Table = ({
           ))}
         </select>
 
-        {/* Industry Filter */}
         <select
           style={{ padding: "6px" }}
           value={filters.industry}
@@ -202,7 +197,6 @@ export const Table = ({
         </select>
       </div>
 
-      {/* TABLE */}
       <div
         className="table-container"
         style={{
@@ -261,6 +255,22 @@ export const Table = ({
           </thead>
 
           <tbody>
+            {!data.length &&
+              <tr>
+                <td colSpan={columns.length}>
+                  <div
+                    style={{
+                      height: height,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <CircularIndeterminate />
+                  </div>
+                </td>
+              </tr>
+            }
             {paginatedData.length > 0 ? (
               paginatedData.map((row, idx) => (
                 <tr key={startIndex + idx}>
@@ -294,7 +304,6 @@ export const Table = ({
         </table>
       </div>
 
-      {/* PAGINATION */}
       {filterData.length > 0 && (
         <div
           style={{
