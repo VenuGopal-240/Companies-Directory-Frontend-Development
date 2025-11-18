@@ -1,25 +1,15 @@
 .table-container {
   border: 1px solid #ccc;
   overflow-y: auto;
+  overflow-x: auto;
 }
-
 
 .table {
   width: 100%;
   border-collapse: collapse;
   font-family: Arial, sans-serif;
   font-size: 14px;
-  table-layout: fixed; 
-}
-
-.table th,
-.table td {
-  padding: 15px;
-  border: 1px solid #ccc;
-  text-align: left;
-  overflow: hidden; 
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  table-layout: fixed;
 }
 
 .table thead th {
@@ -27,6 +17,54 @@
   top: 0;
   background: #f2f2f2;
   z-index: 2;
+  padding: 12px;
+  border: 1px solid #ccc;
+  white-space: normal;
+  vertical-align: middle;
+}
+
+.table thead th .header-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.search-icon {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.table thead th .header-cell input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+  font-size: 13px;
+}
+
+.table td {
+  padding: 15px;
+  border: 1px solid #ccc;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.table th {
+  border: 1px solid #ccc;
 }
 
 .table tbody tr:hover {
@@ -41,37 +79,27 @@
   height: 18px;
 }
 
-.header-cell {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  width: 100%;
-  position: relative;
-  min-width: 120px;
-}
-
-.header-cell input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0.3rem;
-}
-
-.search-icon {
-  cursor: pointer;
-}
-
 @media (max-width: 768px) {
-  .header-cell input {
+  .table thead th .header-cell input {
     max-width: 100px;
     font-size: 12px;
   }
 }
 
 @media (max-width: 480px) {
-  .header-cell input {
+  .table thead th .header-cell input {
     max-width: 80px;
     font-size: 11px;
   }
 }
 
+@media (max-width: 600px) {
+  .table thead th .header-cell {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .search-icon {
+    margin-top: 4px;
+  }
+}
