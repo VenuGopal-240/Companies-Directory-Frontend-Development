@@ -5,7 +5,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-export const companies = [
+ export const companies = [
   {
     id: 1,
     name: "TechVision Solutions",
@@ -278,22 +278,12 @@ export const companies = [
   }
 ];
 
-
 app.get("/companies", (req, res) => {
-  res.json({
-    success: true,
-    total: companies.length,
-    data: companies
-  });
+  res.json(companies);
 });
 
-app.get("/companies/:id", (req, res) => {
-  const company = companies.find(c => c.id === Number(req.params.id));
-  if (!company)
-    return res.status(404).json({ success: false, message: "Not Found" });
+const port = process.env.PORT || 3000;
 
-  res.json({ success: true, data: company });
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
-
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));

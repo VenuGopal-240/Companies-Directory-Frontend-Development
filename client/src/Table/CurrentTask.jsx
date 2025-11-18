@@ -13,7 +13,7 @@ const CurrentTask = () => {
 
     const [data, setData] = useState([])
     useEffect(() => {
-        fetch("http://localhost:3000/companies").then((res) => res.json()).then((data) => setData(data?.data))
+        fetch("https://companies-directory-frontend-development.onrender.com/companies").then((res) => res.json()).then((data) => setData(data?.data))
     }, []);
 
     return (
