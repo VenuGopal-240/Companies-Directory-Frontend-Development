@@ -5,10 +5,12 @@ import SearchIcon from "@mui/icons-material/Search";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { TextField } from "@mui/material";
 import CircularIndeterminate from "./Loader";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
 
 export const Table = ({
   columns,
-  data,
+  data = [],
   searchble = false,
   width = "100%",
   height = "400px",
@@ -20,47 +22,47 @@ export const Table = ({
 
   const [searchType, setSearchType] = useState({});
   const [searchValues, setSearchValues] = useState({});
-  const [filterData, setFilterData] = useState(data);
-  const [duplicateFilterData, setDuplicateFilterData] = useState(data);
-  const [sortConfig, setSortConfig] = useState(
-    columns.map((col) => ({
-      key: col.id,
-      direction: "none",
-    }))
-  );
-
-  const [originalData, setOriginalData] = useState(data);
+  const [filterData, setFilterData] = useState([]);
+  const [sortConfig, setSortConfig] = useState([]);
+  const [originalData, setOriginalData] = useState([]);
 
   const [filters, setFilters] = useState({
     location: "",
     industry: "",
   });
 
-  const uniqueLocations = [...new Set(data.map((item) => item.location))];
-  const uniqueIndustries = [...new Set(data.map((item) => item.industry))];
+  const uniqueLocations = [...new Set(data?.map((item) => item.location))];
+  const uniqueIndustries = [...new Set(data?.map((item) => item.industry))];
 
   useEffect(() => {
-    setFilterData(data);
-    setOriginalData(data);
-    setDuplicateFilterData(data);
+    setFilterData(data || []);
+    setOriginalData(data || []);
 
     let ids = columns.map((e) => e.id);
 
-    let searchObj = ids.reduce((acc, key) => {
-      acc[key] = false;
-      return acc;
-    }, {});
-    setSearchType(searchObj);
+    setSearchType(
+      ids.reduce((acc, key) => {
+        acc[key] = false;
+        return acc;
+      }, {})
+    );
 
-    let initValues = ids.reduce((acc, key) => {
-      acc[key] = "";
-      return acc;
-    }, {});
-    setSearchValues(initValues);
+    setSearchValues(
+      ids.reduce((acc, key) => {
+        acc[key] = "";
+        return acc;
+      }, {})
+    );
+
+    setSortConfig(
+      columns.map((col) => ({
+        key: col.id,
+        direction: "none",
+      }))
+    );
   }, [data, columns]);
-
   useEffect(() => {
-    let filtered = data
+    let filtered = (data || [])
       .filter((row) =>
         Object.keys(searchValues).every((key) => {
           const val = searchValues[key]?.toLowerCase();
@@ -78,10 +80,11 @@ export const Table = ({
     setCurrentPage(1);
   }, [searchValues, filters, data]);
 
-  const totalPages = Math.ceil(filterData.length / rowsPerPage);
+
+  const totalPages = Math.ceil((filterData?.length || 0) / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = Math.min(startIndex + rowsPerPage, filterData.length);
-  const paginatedData = filterData.slice(startIndex, endIndex);
+  const endIndex = Math.min(startIndex + rowsPerPage, filterData?.length || 0);
+  const paginatedData = filterData?.slice(startIndex, endIndex) || [];
 
   const handleRowsPerPageChange = (e) => {
     setRowsPerPage(Number(e.target.value));
@@ -122,37 +125,35 @@ export const Table = ({
   };
 
   const handleSortings = (colId) => {
-    setSortConfig((prev) =>
-      prev.map((col) => {
-        if (col.key === colId) {
-          let newDirection = "asc";
-          if (col.direction === "asc") newDirection = "desc";
-          else if (col.direction === "desc") newDirection = "none";
-          return { ...col, direction: newDirection };
-        }
-        return { ...col, direction: "none" };
-      })
-    );
+    setSortConfig((prev) => {
+      const current = prev.find((c) => c.key === colId);
 
-    const currentCol = sortConfig.find((c) => c.key === colId);
-    const direction =
-      currentCol?.direction === "asc"
-        ? "desc"
-        : currentCol?.direction === "desc"
-          ? "none"
-          : "asc";
+      const nextDirection =
+        current?.direction === "asc"
+          ? "desc"
+          : current?.direction === "desc"
+            ? "none"
+            : "asc";
 
-    if (direction === "none") {
-      setFilterData([...originalData]);
-    } else {
-      const sorted = [...filterData].sort((a, b) => {
-        if (a[colId] < b[colId]) return direction === "asc" ? -1 : 1;
-        if (a[colId] > b[colId]) return direction === "desc" ? -1 : 1;
-        return 0;
-      });
-      setFilterData(sorted);
-      setDuplicateFilterData(sorted);
-    }
+      const updatedConfig = prev.map((col) =>
+        col.key === colId
+          ? { ...col, direction: nextDirection }
+          : { ...col, direction: "none" }
+      );
+
+      if (nextDirection === "none") {
+        setFilterData([...originalData]);
+      } else {
+        const sorted = [...filterData].sort((a, b) => {
+          if (a[colId] < b[colId]) return nextDirection === "asc" ? -1 : 1;
+          if (a[colId] > b[colId]) return nextDirection === "desc" ? -1 : 1;
+          return 0;
+        });
+        setFilterData(sorted);
+      }
+
+      return updatedConfig;
+    });
   };
 
   return (
@@ -164,6 +165,7 @@ export const Table = ({
           justifyContent: "flex-end",
           gap: "12px",
           marginBottom: "10px",
+          flexWrap: "wrap",
         }}
       >
         <select
@@ -174,7 +176,7 @@ export const Table = ({
           }
         >
           <option value="">All Locations</option>
-          {uniqueLocations.map((loc) => (
+          {uniqueLocations?.map((loc) => (
             <option key={loc} value={loc}>
               {loc}
             </option>
@@ -189,7 +191,7 @@ export const Table = ({
           }
         >
           <option value="">All Industries</option>
-          {uniqueIndustries.map((ind) => (
+          {uniqueIndustries?.map((ind) => (
             <option key={ind} value={ind}>
               {ind}
             </option>
@@ -207,18 +209,25 @@ export const Table = ({
           whiteSpace: "nowrap",
         }}
       >
-        <table className="table" style={{ minWidth: width }}>
-          <thead
-            style={{
-              position: "sticky",
-              top: 0,
-              background: "#fff",
-              zIndex: 2,
-            }}
-          >
+        <table
+          className="table"
+          style={{
+            minWidth: width,
+            tableLayout: "fixed",
+          }}
+        >
+          <thead>
             <tr>
               {columns.map((col) => (
-                <th key={col.id}>
+                <th
+                  key={col.id}
+                  style={{
+                    minWidth: col.width || "160px",
+                    maxWidth: col.width || "160px",
+                    whiteSpace: "normal",
+                    padding: "8px",
+                  }}
+                >
                   <span className="header-cell">
                     {searchble && searchType[col.id] ? (
                       <TextField
@@ -227,15 +236,24 @@ export const Table = ({
                         value={searchValues[col.id]}
                         autoFocus
                         variant="outlined"
-                        placeholder={`search by ${col.id}`}
+                        placeholder={`Search ${col.label}`}
                       />
                     ) : (
-                      <span>
+                      <span className="header-title">
                         {col.label}
                         {sortable && (
                           <Button onClick={() => handleSortings(col.id)}>
-                            <ArrowDownwardIcon />
+                            {
+                              sortConfig.find(s => s.key === col.id)?.direction === "asc" ? (
+                                <ArrowUpwardIcon />
+                              ) : sortConfig.find(s => s.key === col.id)?.direction === "desc" ? (
+                                <ArrowDownwardIcon />
+                              ) : (
+                                <SwapVertIcon />
+                              )
+                            }
                           </Button>
+
                         )}
                       </span>
                     )}
@@ -255,7 +273,7 @@ export const Table = ({
           </thead>
 
           <tbody>
-            {!data.length &&
+            {!data?.length && (
               <tr>
                 <td colSpan={columns.length}>
                   <div
@@ -270,12 +288,22 @@ export const Table = ({
                   </div>
                 </td>
               </tr>
-            }
-            {paginatedData.length > 0 ? (
+            )}
+
+            {paginatedData?.length > 0 ? (
               paginatedData.map((row, idx) => (
                 <tr key={startIndex + idx}>
                   {columns.map((col) => (
-                    <td key={col.id} data-label={col.label}>
+                    <td
+                      key={col.id}
+                      data-label={col.label}
+                      style={{
+                        minWidth: col.width || "160px",
+                        maxWidth: col.width || "160px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {col.renderer
                         ? col.renderer(row, startIndex + idx)
                         : row[col.id]}
@@ -284,33 +312,36 @@ export const Table = ({
                 </tr>
               ))
             ) : (
-              <tr>
-                <td colSpan={columns.length}>
-                  <div
-                    style={{
-                      height: height,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <span>{noDataMsg?.name}</span>
-                    {noDataMsg?.Icon}
-                  </div>
-                </td>
-              </tr>
+              data?.length > 0 && (
+                <tr>
+                  <td colSpan={columns.length}>
+                    <div
+                      style={{
+                        height: height,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span>{noDataMsg?.name}</span>
+                      {noDataMsg?.Icon}
+                    </div>
+                  </td>
+                </tr>
+              )
             )}
           </tbody>
         </table>
       </div>
 
-      {filterData.length > 0 && (
+      {filterData?.length > 0 && (
         <div
           style={{
             width: width,
             display: "flex",
             justifyContent: "space-between",
             marginTop: "10px",
+            flexWrap: "wrap",
           }}
         >
           <select value={rowsPerPage} onChange={handleRowsPerPageChange}>
@@ -322,7 +353,7 @@ export const Table = ({
           </select>
 
           <div>
-            {startIndex + 1} - {endIndex} of {filterData.length}{" "}
+            {startIndex + 1} - {endIndex} of {filterData?.length}{" "}
             <button onClick={handlePrevPage} disabled={currentPage === 1}>
               {"<"}
             </button>
