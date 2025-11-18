@@ -1,0 +1,77 @@
+.table-container {
+  border: 1px solid #ccc;
+  overflow-y: auto;
+}
+
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  table-layout: fixed; 
+}
+
+.table th,
+.table td {
+  padding: 15px;
+  border: 1px solid #ccc;
+  text-align: left;
+  overflow: hidden; 
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  background: #f2f2f2;
+  z-index: 2;
+}
+
+.table tbody tr:hover {
+  background: #f1f1f1;
+}
+
+.table input[type="checkbox"],
+.table input[type="radio"],
+.checkbox {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.header-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  position: relative;
+  min-width: 120px;
+}
+
+.header-cell input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.3rem;
+}
+
+.search-icon {
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .header-cell input {
+    max-width: 100px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-cell input {
+    max-width: 80px;
+    font-size: 11px;
+  }
+}
+
